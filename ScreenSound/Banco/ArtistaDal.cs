@@ -2,7 +2,7 @@
 
 namespace ScreenSound.Banco
 {
-	internal class ArtistaDal
+	internal class ArtistaDal : DAL<Artista>
 	{
 		private readonly ScreenSoundContext _context;
 
@@ -11,13 +11,13 @@ namespace ScreenSound.Banco
 			_context = context;
 		}
 
-		public IEnumerable<Artista> Listar()
+		public override IEnumerable<Artista> Listar()
 		{
 			return _context.Artistas
 				.ToList();
 		}
 
-		public Artista? Mostrar(int id)
+		public override Artista? Mostrar(int id)
 		{
 			return _context.Artistas
 				.Find(id);
@@ -29,21 +29,21 @@ namespace ScreenSound.Banco
 				.FirstOrDefault(a => a.Nome == nome);
 		}
 
-		public void Adicionar(Artista artista)
+		public override void Adicionar(Artista artista)
 		{
 			_context.Artistas
 				.Add(artista);
 			_context.SaveChanges();
 		}
 
-		public void Atualizar(Artista artista)
+		public override void Atualizar(Artista artista)
 		{
 			_context.Artistas
 				.Update(artista);
 			_context.SaveChanges();
 		}
 
-		public void Remover(Artista artista)
+		public override void Remover(Artista artista)
 		{
 			_context.Artistas.Remove(artista);
 			_context.SaveChanges();
