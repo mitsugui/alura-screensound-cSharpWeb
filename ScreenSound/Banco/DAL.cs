@@ -2,12 +2,46 @@
 
 namespace ScreenSound.Banco
 {
-	internal abstract class DAL<T>
+	internal abstract class DAL<T> where T : class
 	{
-		public abstract IEnumerable<T> Listar();
-		public abstract T? Mostrar(int id);
-		public abstract void Adicionar(T item);
-		public abstract void Atualizar(T item);
-		public abstract void Remover(T item);
+		protected readonly ScreenSoundContext Context;
+
+		protected DAL(ScreenSoundContext context)
+		{
+			Context = context;
+		}
+
+		public IEnumerable<T> Listar()
+		{
+			return Context.Set<T>()
+				.ToList();
+		}
+
+		public T? Mostrar(int id)
+		{
+			return Context.Set<T>()
+				.Find(id);
+		}
+
+		public void Adicionar(T item)
+		{
+			Context.Set<T>()
+				.Add(item);
+			Context.SaveChanges();
+		}
+
+		public void Atualizar(T item)
+		{
+			Context.Set<T>()
+				.Update(item);
+			Context.SaveChanges();
+		}
+
+		public void Remover(T item)
+		{
+			Context.Set<T>()
+				.Remove(item);
+			Context.SaveChanges();
+		}
 	}
 }
