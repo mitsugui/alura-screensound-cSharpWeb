@@ -1,5 +1,49 @@
 ﻿using ScreenSound.Banco;
 using ScreenSound.Menus;
+using ScreenSound.Modelos;
+
+
+try
+{
+	var dal = new MusicaDal(new ScreenSoundContext());
+
+    dal.Adicionar(new Musica("Música 1"));
+
+	var musicaProcurada = dal.Listar().FirstOrDefault();
+
+	if (musicaProcurada == null)
+	{
+        Console.WriteLine("Música não encontrada");
+		return;
+	}
+	else
+	{
+        Console.WriteLine($"Música adicionada: {musicaProcurada}");
+	}
+
+	musicaProcurada.Nome = "Música renomeada";
+    dal.Atualizar(musicaProcurada);
+
+	foreach (var musica in dal.Listar())
+	{
+		Console.WriteLine(musica);
+	}
+
+    dal.Remover(musicaProcurada);
+
+	if (!dal.Listar().Any())
+	{
+        Console.WriteLine("Lista de músicas vazia");
+	}
+
+}
+catch (Exception ex)
+{
+    Console.WriteLine(ex.Message);
+}
+
+return;
+
 
 
 Dictionary<int, Menu> opcoes = new()
