@@ -1,47 +1,50 @@
-﻿using ScreenSound.Modelos;
-
-namespace ScreenSound.Banco
+﻿namespace ScreenSound.Banco
 {
-	internal abstract class DAL<T> where T : class
+	internal class DAL<T> where T : class
 	{
-		protected readonly ScreenSoundContext Context;
+		private readonly ScreenSoundContext _context;
 
-		protected DAL(ScreenSoundContext context)
+		public DAL(ScreenSoundContext context)
 		{
-			Context = context;
+			_context = context;
 		}
 
 		public IEnumerable<T> Listar()
 		{
-			return Context.Set<T>()
+			return _context.Set<T>()
 				.ToList();
 		}
 
 		public T? Mostrar(int id)
 		{
-			return Context.Set<T>()
+			return _context.Set<T>()
 				.Find(id);
+		}
+		public T? MostrarPor(Func<T, bool> condicao)
+		{
+			return _context.Set<T>()
+				.FirstOrDefault(condicao);
 		}
 
 		public void Adicionar(T item)
 		{
-			Context.Set<T>()
+			_context.Set<T>()
 				.Add(item);
-			Context.SaveChanges();
+			_context.SaveChanges();
 		}
 
 		public void Atualizar(T item)
 		{
-			Context.Set<T>()
+			_context.Set<T>()
 				.Update(item);
-			Context.SaveChanges();
+			_context.SaveChanges();
 		}
 
 		public void Remover(T item)
 		{
-			Context.Set<T>()
+			_context.Set<T>()
 				.Remove(item);
-			Context.SaveChanges();
+			_context.SaveChanges();
 		}
 	}
 }
