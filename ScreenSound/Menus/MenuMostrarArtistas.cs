@@ -9,7 +9,7 @@ internal class MenuMostrarArtistas : Menu
         base.Executar(musicasRegistradas);
         ExibirTituloDaOpcao("Exibindo todos os artistas registradas na nossa aplicação");
 
-        foreach (string artista in musicasRegistradas.Keys)
+        foreach (var artista in musicasRegistradas.Keys)
         {
             Console.WriteLine($"Artista: {artista}");
         }

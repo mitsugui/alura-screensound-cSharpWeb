@@ -9,10 +9,10 @@ internal class MenuMostrarMusicas : Menu
         base.Executar(artistasRegistrados);
         ExibirTituloDaOpcao("Exibir detalhes do artista");
         Console.Write("Digite o nome do artista que deseja conhecer melhor: ");
-        string nomeDoArtista = Console.ReadLine()!;
+        var nomeDoArtista = Console.ReadLine()!;
         if (artistasRegistrados.ContainsKey(nomeDoArtista))
         {
-            Artista artista = artistasRegistrados[nomeDoArtista];
+            var artista = artistasRegistrados[nomeDoArtista];
             Console.WriteLine("\nDiscografia:");
             artista.ExibirDiscografia();
             Console.WriteLine("\nDigite uma tecla para voltar ao menu principal");
