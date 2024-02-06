@@ -1,5 +1,51 @@
-﻿using ScreenSound.Menus;
+﻿using ScreenSound.Banco;
+using ScreenSound.Menus;
 using ScreenSound.Modelos;
+
+
+try
+{
+	var dal = new ArtistaDal();
+    dal.Adicionar(new Artista("Apagar", "Apagar")
+	{
+        FotoPerfil = @"https://i.ytimg.com/vi/n_QKFb4OpNo/maxresdefault.jpg"
+	});
+
+	Artista? artistaApagar = null;
+	foreach (var artista in dal.Listar())
+	{
+		Console.WriteLine(artista);
+
+		if (artista.Nome == "Apagar") artistaApagar = artista;
+	}
+
+	if (artistaApagar == null)
+	{
+        Console.WriteLine("Artista não encontrado");
+		return;
+	}
+	artistaApagar.Nome = "Outro nome";
+	artistaApagar.Bio = "Outra bio";
+	artistaApagar.FotoPerfil = "";
+
+    dal.Atualizar(artistaApagar);
+
+	Console.WriteLine("Artista atualizado:");
+	Console.WriteLine(dal.Mostrar(artistaApagar.Id));
+
+    dal.Remover(artistaApagar.Id);
+
+	foreach (var artista in dal.Listar())
+	{
+		Console.WriteLine(artista);
+	}
+}
+catch (Exception ex)
+{
+    Console.WriteLine(ex.Message);
+}
+
+return;
 
 Artista ira = new Artista("Ira!", "Banda Ira!");
 Artista beatles = new("The Beatles", "Banda The Beatles");
