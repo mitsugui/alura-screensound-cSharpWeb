@@ -5,37 +5,31 @@ using ScreenSound.Modelos;
 
 try
 {
-	var dal = new ArtistaDal();
+	var dal = new ArtistaDal(new ScreenSoundContext());
     dal.Adicionar(new Artista("Apagar", "Apagar")
-	{
+    {
         FotoPerfil = @"https://i.ytimg.com/vi/n_QKFb4OpNo/maxresdefault.jpg"
-	});
+    });
 
-	Artista? artistaApagar = null;
-	foreach (var artista in dal.Listar())
-	{
-		Console.WriteLine(artista);
+	Artista? artistaApagar = dal.MostrarPeloNome("apagar");
 
-		if (artista.Nome == "Apagar") artistaApagar = artista;
-	}
-
-	if (artistaApagar == null)
-	{
+    if (artistaApagar == null)
+    {
         Console.WriteLine("Artista não encontrado");
-		return;
-	}
-	artistaApagar.Nome = "Outro nome";
-	artistaApagar.Bio = "Outra bio";
-	artistaApagar.FotoPerfil = "";
+        return;
+    }
+    artistaApagar.Nome = "Outro nome";
+    artistaApagar.Bio = "Outra bio";
+    artistaApagar.FotoPerfil = "";
 
     dal.Atualizar(artistaApagar);
 
-	Console.WriteLine("Artista atualizado:");
-	Console.WriteLine(dal.Mostrar(artistaApagar.Id));
+    Console.WriteLine("Artista atualizado:");
+    Console.WriteLine(dal.Mostrar(artistaApagar.Id));
 
-    dal.Remover(artistaApagar.Id);
+    dal.Remover(artistaApagar);
 
-	foreach (var artista in dal.Listar())
+    foreach (var artista in dal.Listar())
 	{
 		Console.WriteLine(artista);
 	}
