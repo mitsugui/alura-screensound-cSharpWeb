@@ -5,12 +5,19 @@ namespace ScreenSound.Menus;
 
 internal class MenuMostrarArtistas : Menu
 {
-    public override void Executar(DAL<Artista> artistaDal)
+	private readonly DAL<Artista> _artistaDal;
+
+	public MenuMostrarArtistas(DAL<Artista> artistaDal)
+	{
+		_artistaDal = artistaDal;
+	}
+
+	public override void Executar()
     {
-        base.Executar(artistaDal);
+        base.Executar();
         ExibirTituloDaOpcao("Exibindo todos os artistas registradas na nossa aplicação");
 
-        foreach (var artista in artistaDal.Listar())
+        foreach (var artista in _artistaDal.Listar())
         {
             Console.WriteLine($"Artista: {artista.Nome}");
         }

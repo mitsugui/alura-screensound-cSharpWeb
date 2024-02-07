@@ -16,8 +16,8 @@ public class Musica
     public void ExibirFichaTecnica()
     {
         Console.WriteLine($"Nome: {Nome}");
-      
-    }
+		Console.WriteLine($"Ano de Lançamento: {AnoLancamento}");
+	}
 
     public override string ToString()
     {

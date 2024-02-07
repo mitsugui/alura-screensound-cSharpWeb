@@ -20,10 +20,18 @@
 			return _context.Set<T>()
 				.Find(id);
 		}
+
 		public T? MostrarPor(Func<T, bool> condicao)
 		{
 			return _context.Set<T>()
 				.FirstOrDefault(condicao);
+		}
+
+		public List<T> ListarPor(Func<T, bool> condicao)
+		{
+			return _context.Set<T>()
+				.Where(condicao)
+				.ToList();
 		}
 
 		public void Adicionar(T item)
