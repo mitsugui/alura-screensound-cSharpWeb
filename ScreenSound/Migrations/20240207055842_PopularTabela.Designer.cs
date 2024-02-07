@@ -11,8 +11,8 @@ using ScreenSound.Banco;
 namespace ScreenSound.Migrations
 {
     [DbContext(typeof(ScreenSoundContext))]
-    [Migration("20240207044035_projetoInicial")]
-    partial class ProjetoInicial
+    [Migration("20240207055842_PopularTabela")]
+    partial class PopularTabela
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
