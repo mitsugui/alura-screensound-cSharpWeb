@@ -1,8 +1,9 @@
-﻿# .NET: persistindo dados com Entity Framework Core
+﻿# Screen Sound - sistema de cadastro e artistas e músicas
 
 ## 01. Uso do Banco de Dados
 
-Projeto simples criado com intuito de acompanhar as aulas.
+Projeto simples criado com intuito de acompanhar as aulas do curso:
+- .NET: persistindo dados com Entity Framework Core
 
 Não segue nenhuma das boas práticas de segurança.
 
