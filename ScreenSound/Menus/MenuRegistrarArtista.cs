@@ -22,7 +22,11 @@ internal class MenuRegistrarArtista : Menu
 		Console.Write("Digite a bio do artista que deseja registrar: ");
 		var bioDoArtista = Console.ReadLine()!;
 
-		var artista = new Artista(nomeDoArtista, bioDoArtista);
+		var artista = new Artista
+		{
+			Nome = nomeDoArtista,
+			Bio = bioDoArtista
+		};
 		_artistaDal.Adicionar(artista);
 		Console.WriteLine($"O artista {nomeDoArtista} foi registrado com sucesso!");
 		
