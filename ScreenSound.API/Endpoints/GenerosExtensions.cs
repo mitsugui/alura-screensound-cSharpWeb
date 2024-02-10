@@ -11,10 +11,7 @@ namespace ScreenSound.API.Endpoints
 		public static void AddGenerosEndpoint(this IEndpointRouteBuilder app)
 		{
 			app.MapGet("/Generos", ([FromServices] DAL<Genero> generosDal)
-				=> Results.Ok(generosDal
-					.Listar()
-					.Select(g => g.ToResponse())
-					.ToList()));
+				=> Results.Ok(generosDal.Listar().ToResponse()));
 
 			app.MapGet("/Generos/{nome}", ([FromServices] DAL<Genero> generosDal, string nome) =>
 			{
@@ -70,5 +67,10 @@ namespace ScreenSound.API.Endpoints
 
 		private static GeneroResponse ToResponse(this Genero genero)
 			=> new(genero.Id, genero.Nome, genero.Descricao);
+
+		private static List<GeneroResponse> ToResponse(this IEnumerable<Genero> generos)
+			=> generos
+				.Select(g => g.ToResponse())
+				.ToList();
 	}
 }
