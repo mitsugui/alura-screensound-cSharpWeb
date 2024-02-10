@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
 using ScreenSound.API.Endpoints;
 using ScreenSound.Shared.Modelos;
 using ScreenSound.Shared.Persistencia.Banco;
@@ -6,7 +7,11 @@ using JsonOptions = Microsoft.AspNetCore.Http.Json.JsonOptions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<ScreenSoundContext>();
+builder.Services.AddDbContext<ScreenSoundContext>(optionsBuilder =>
+	optionsBuilder
+		.UseSqlServer(builder.Configuration
+			.GetConnectionString("ScreenSoundDatabase"))
+		.UseLazyLoadingProxies());
 builder.Services.AddTransient<DAL<Artista>>();
 builder.Services.AddTransient<DAL<Musica>>();
 builder.Services.AddTransient<DAL<Genero>>();

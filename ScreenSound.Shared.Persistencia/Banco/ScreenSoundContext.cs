@@ -6,24 +6,29 @@ namespace ScreenSound.Shared.Persistencia.Banco
 {
 	public class ScreenSoundContext : DbContext
 	{
-		private readonly string? _conenctionString;
-
 		public DbSet<Artista> Artistas { get; set; }
 
 		public DbSet<Musica> Musicas { get; set; }
 
 		public DbSet<Genero> Generos { get; set; }
 
-		public ScreenSoundContext(IConfiguration configuration)
+		//public ScreenSoundContext(){}
+
+		public ScreenSoundContext(DbContextOptions<ScreenSoundContext> dbContext) 
+			: base(dbContext)
 		{
-			_conenctionString = configuration.GetConnectionString("ScreenSoundDatabase");
 		}
 
-		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-		{
-			optionsBuilder.UseSqlServer(_conenctionString)
-				.UseLazyLoadingProxies();
-		}
+		//protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+		//{
+		//	var configuration = new ConfigurationBuilder()
+		//		.Set
+		//		.Build();
+		//	optionsBuilder
+		//		.UseSqlServer(configuration.Configuration
+		//			.GetConnectionString("ScreenSoundDatabase"))
+		//		.UseLazyLoadingProxies();
+		//}
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{

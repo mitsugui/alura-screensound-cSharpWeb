@@ -1,17 +1,32 @@
-﻿using ScreenSound.Menus;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using ScreenSound.Menus;
 using ScreenSound.Shared.Modelos;
 using ScreenSound.Shared.Persistencia.Banco;
 
+var configuration = new ConfigurationBuilder()
+	.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+	.AddEnvironmentVariables()
+	.AddCommandLine(args)
+	.Build();
+
+var contextOptions = new DbContextOptionsBuilder<ScreenSoundContext>()
+	.UseSqlServer(configuration
+		.GetConnectionString("ScreenSoundDatabase"))
+	.UseLazyLoadingProxies()
+	.Options;
+
+var screenSoundContext = new ScreenSoundContext(contextOptions);
 
 Dictionary<int, Menu> opcoes = new()
 {
-	{ 1, new MenuRegistrarArtista(new DAL<Artista>(new ScreenSoundContext())) },
-	{ 2, new MenuRegistrarMusica(new DAL<Artista>(new ScreenSoundContext())) },
-	{ 3, new MenuMostrarArtistas(new DAL<Artista>(new ScreenSoundContext())) },
-	{ 4, new MenuMostrarMusicas(new DAL<Artista>(new ScreenSoundContext())) },
-	{ 5, new MenuMostrarMusicasPorAnoLancamento(new DAL<Musica>(new ScreenSoundContext())) },
-	{ 6, new MenuApagarArtista(new DAL<Artista>(new ScreenSoundContext())) },
-	{ 7, new MenuApagarMusica(new DAL<Musica>(new ScreenSoundContext())) },
+	{ 1, new MenuRegistrarArtista(new DAL<Artista>(screenSoundContext)) },
+	{ 2, new MenuRegistrarMusica(new DAL<Artista>(screenSoundContext)) },
+	{ 3, new MenuMostrarArtistas(new DAL<Artista>(screenSoundContext)) },
+	{ 4, new MenuMostrarMusicas(new DAL<Artista>(screenSoundContext)) },
+	{ 5, new MenuMostrarMusicasPorAnoLancamento(new DAL<Musica>(screenSoundContext)) },
+	{ 6, new MenuApagarArtista(new DAL<Artista>(screenSoundContext)) },
+	{ 7, new MenuApagarMusica(new DAL<Musica>(screenSoundContext)) },
 	{ -1, new MenuSair() }
 };
 
