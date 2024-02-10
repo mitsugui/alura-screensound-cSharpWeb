@@ -1,11 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using ScreenSound.Shared.Modelos;
 
 namespace ScreenSound.Shared.Persistencia.Banco
 {
 	public class ScreenSoundContext : DbContext
 	{
-		private const string ConenctionString = @"Data Source=BORDEAUX,11433;Initial Catalog=ScreenSoundDb;User ID=sa;Password=ScR33n$ound;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False";
+		private readonly string? _conenctionString;
 
 		public DbSet<Artista> Artistas { get; set; }
 
@@ -13,9 +14,14 @@ namespace ScreenSound.Shared.Persistencia.Banco
 
 		public DbSet<Genero> Generos { get; set; }
 
+		public ScreenSoundContext(IConfiguration configuration)
+		{
+			_conenctionString = configuration.GetConnectionString("ScreenSoundDatabase");
+		}
+
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
-			optionsBuilder.UseSqlServer(ConenctionString)
+			optionsBuilder.UseSqlServer(_conenctionString)
 				.UseLazyLoadingProxies();
 		}
 
