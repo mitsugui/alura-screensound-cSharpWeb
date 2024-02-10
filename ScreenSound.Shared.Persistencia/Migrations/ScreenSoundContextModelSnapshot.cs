@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using ScreenSound.Banco;
+using ScreenSound.Shared.Persistencia.Banco;
 
 #nullable disable
 
@@ -25,7 +25,22 @@ namespace ScreenSound.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("ScreenSound.Modelos.Artista", b =>
+            modelBuilder.Entity("GeneroMusica", b =>
+                {
+                    b.Property<int>("GenerosId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MusicasId")
+                        .HasColumnType("int");
+
+                    b.HasKey("GenerosId", "MusicasId");
+
+                    b.HasIndex("MusicasId");
+
+                    b.ToTable("GeneroMusica");
+                });
+
+            modelBuilder.Entity("ScreenSound.Shared.Modelos.Artista", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -50,7 +65,26 @@ namespace ScreenSound.Migrations
                     b.ToTable("Artistas");
                 });
 
-            modelBuilder.Entity("ScreenSound.Modelos.Musica", b =>
+            modelBuilder.Entity("ScreenSound.Shared.Modelos.Genero", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Descricao")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nome")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Generos");
+                });
+
+            modelBuilder.Entity("ScreenSound.Shared.Modelos.Musica", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -75,9 +109,24 @@ namespace ScreenSound.Migrations
                     b.ToTable("Musicas");
                 });
 
-            modelBuilder.Entity("ScreenSound.Modelos.Musica", b =>
+            modelBuilder.Entity("GeneroMusica", b =>
                 {
-                    b.HasOne("ScreenSound.Modelos.Artista", "Artista")
+                    b.HasOne("ScreenSound.Shared.Modelos.Genero", null)
+                        .WithMany()
+                        .HasForeignKey("GenerosId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ScreenSound.Shared.Modelos.Musica", null)
+                        .WithMany()
+                        .HasForeignKey("MusicasId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ScreenSound.Shared.Modelos.Musica", b =>
+                {
+                    b.HasOne("ScreenSound.Shared.Modelos.Artista", "Artista")
                         .WithMany("Musicas")
                         .HasForeignKey("ArtistaId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -85,7 +134,7 @@ namespace ScreenSound.Migrations
                     b.Navigation("Artista");
                 });
 
-            modelBuilder.Entity("ScreenSound.Modelos.Artista", b =>
+            modelBuilder.Entity("ScreenSound.Shared.Modelos.Artista", b =>
                 {
                     b.Navigation("Musicas");
                 });

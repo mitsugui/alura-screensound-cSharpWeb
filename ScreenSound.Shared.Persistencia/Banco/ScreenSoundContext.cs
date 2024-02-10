@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ScreenSound.Modelos;
+using ScreenSound.Shared.Modelos;
 
-namespace ScreenSound.Banco
+namespace ScreenSound.Shared.Persistencia.Banco
 {
 	public class ScreenSoundContext : DbContext
 	{
@@ -11,6 +11,8 @@ namespace ScreenSound.Banco
 
 		public DbSet<Musica> Musicas { get; set; }
 
+		public DbSet<Genero> Generos { get; set; }
+
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
 			optionsBuilder.UseSqlServer(ConenctionString)
@@ -19,10 +21,16 @@ namespace ScreenSound.Banco
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
-			modelBuilder.Entity<Artista>()
+			modelBuilder
+				.Entity<Artista>()
 				.HasMany(a => a.Musicas)
 				.WithOne(m => m.Artista)
 				.OnDelete(DeleteBehavior.Cascade);
+
+			modelBuilder
+				.Entity<Musica>()
+				.HasMany(m => m.Generos)
+				.WithMany(g => g.Musicas);
 		}
 	}
 }

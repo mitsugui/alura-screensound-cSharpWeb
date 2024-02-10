@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ScreenSound.API.Requests;
 using ScreenSound.API.Responses;
-using ScreenSound.Banco;
-using ScreenSound.Modelos;
+using ScreenSound.Shared.Modelos;
+using ScreenSound.Shared.Persistencia.Banco;
 
 namespace ScreenSound.API.Endpoints
 {
@@ -25,6 +25,11 @@ namespace ScreenSound.API.Endpoints
 
 			app.MapPost("/Artistas", ([FromServices] DAL<Artista> dal, [FromBody] ArtistaRequest artistaRequest) =>
 			{
+				if (dal.ExisteEntidadeCom(g => artistaRequest.Nome.Equals(g.Nome, StringComparison.InvariantCultureIgnoreCase)))
+				{
+					return Results.BadRequest("Já exite um artista cadastrado com este nome.");
+				}
+
 				var artista = new Artista
 				{
 					Nome = artistaRequest.Nome,

@@ -1,4 +1,4 @@
-﻿namespace ScreenSound.Banco
+﻿namespace ScreenSound.Shared.Persistencia.Banco
 {
 	public class DAL<T> where T : class
 	{
@@ -13,6 +13,12 @@
 		{
 			return _context.Set<T>()
 				.ToList();
+		}
+
+		public bool ExisteEntidadeCom(Func<T, bool> condicao)
+		{
+			return _context.Set<T>()
+				.Any(condicao);
 		}
 
 		public T? Mostrar(int id)

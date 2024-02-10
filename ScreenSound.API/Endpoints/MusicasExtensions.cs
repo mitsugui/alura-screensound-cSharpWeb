@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ScreenSound.API.Requests;
 using ScreenSound.API.Responses;
-using ScreenSound.Banco;
-using ScreenSound.Modelos;
+using ScreenSound.Shared.Modelos;
+using ScreenSound.Shared.Persistencia.Banco;
 
 namespace ScreenSound.API.Endpoints
 {
@@ -24,7 +24,10 @@ namespace ScreenSound.API.Endpoints
 					: Results.Ok(musica.ToResponse());
 			});
 
-			app.MapPost("/Musicas", ([FromServices] DAL<Musica> dal, [FromServices] DAL<Artista> dalArtista, [FromBody] MusicaRequest musicaRequest) =>
+			app.MapPost("/Musicas", ([FromServices] DAL<Musica> dal, 
+				[FromServices] DAL<Artista> dalArtista, 
+				[FromServices] DAL <Genero> dalGenero,
+				[FromBody] MusicaRequest musicaRequest) =>
 			{
 				var artista = dalArtista.Mostrar(musicaRequest.IdArtista);
 				if (artista == null)
@@ -35,7 +38,9 @@ namespace ScreenSound.API.Endpoints
 				var musica = new Musica(musicaRequest.Nome)
 				{
 					AnoLancamento = musicaRequest.AnoLancamento,
-					Artista = artista
+					Artista = artista,
+					Generos = musicaRequest.Generos?.EntityAssembler(dalGenero)
+						?? new List<Genero>()
 				};
 
 				dal.Adicionar(musica);
@@ -70,5 +75,17 @@ namespace ScreenSound.API.Endpoints
 
 		public static MusicaResponse ToResponse(this Musica musica)
 			=> new(musica.Id, musica.Nome, musica.AnoLancamento, musica.Artista?.Id, musica.Artista?.Nome);
+
+		public static Genero ToEntity(this GeneroRequest request) 
+			=> new() { Nome = request.Nome, Descricao = request.Descricao };
+
+		public static ICollection<Genero> EntityAssembler(this ICollection<GeneroRequest> request, DAL<Genero> dalGenero)
+		{
+			return request
+				.Select(r => dalGenero.MostrarPor(
+						g => r.Nome.Equals(g.Nome, StringComparison.InvariantCultureIgnoreCase))
+					?? r.ToEntity())
+				.ToList();
+		}
 	}
 }

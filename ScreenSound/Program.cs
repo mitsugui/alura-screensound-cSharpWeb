@@ -1,6 +1,6 @@
-﻿using ScreenSound.Banco;
-using ScreenSound.Menus;
-using ScreenSound.Modelos;
+﻿using ScreenSound.Menus;
+using ScreenSound.Shared.Modelos;
+using ScreenSound.Shared.Persistencia.Banco;
 
 
 Dictionary<int, Menu> opcoes = new()
