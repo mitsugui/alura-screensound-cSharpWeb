@@ -11,13 +11,18 @@ builder.Services.AddDbContext<ScreenSoundContext>();
 builder.Services.AddTransient<DAL<Artista>>();
 builder.Services.AddTransient<DAL<Musica>>();
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 builder.Services.Configure<JsonOptions>(
 	op => op.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 var app = builder.Build();
 
 app.AddArtistasEndpoints();
-
 app.AddMusicasEndpoints();
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.Run();

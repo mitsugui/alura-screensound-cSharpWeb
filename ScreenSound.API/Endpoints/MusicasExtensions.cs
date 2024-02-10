@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ScreenSound.API.Requests;
+using ScreenSound.API.Responses;
 using ScreenSound.Banco;
 using ScreenSound.Modelos;
 
@@ -9,27 +11,33 @@ namespace ScreenSound.API.Endpoints
 		public static void AddMusicasEndpoints(this IEndpointRouteBuilder app)
 		{
 
-			app.MapGet("/Musicas", ([FromServices] DAL<Musica> dal) => Results.Ok(dal.Listar()));
+			app.MapGet("/Musicas", ([FromServices] DAL<Musica> dal) =>
+			Results.Ok(dal.Listar()
+				.Select(m => m.ToResponse())
+				.ToList()));
 
 			app.MapGet("/Musicas/{nome}", ([FromServices] DAL<Musica> dal, string nome) =>
 			{
-				var musica = dal.MostrarPor(a => a.Nome == nome);
+				var musica = dal.MostrarPor(m => m.Nome.Equals(nome, StringComparison.InvariantCultureIgnoreCase));
 				return musica is null
 					? Results.NotFound()
-					: Results.Ok(musica);
+					: Results.Ok(musica.ToResponse());
 			});
 
-			app.MapPost("/Musicas", ([FromServices] DAL<Musica> dal, [FromServices] DAL<Artista> dalArtista, [FromBody] Musica musica) =>
+			app.MapPost("/Musicas", ([FromServices] DAL<Musica> dal, [FromServices] DAL<Artista> dalArtista, [FromBody] MusicaRequest musicaRequest) =>
 			{
-				var artista = musica.Artista?.Id != null
-					? dalArtista.Mostrar(musica.Artista.Id)
-					: null;
+				var artista = dalArtista.Mostrar(musicaRequest.IdArtista);
 				if (artista == null)
 				{
 					Results.BadRequest("Informe o artista");
 				}
 
-				musica.Artista = artista;
+				var musica = new Musica(musicaRequest.Nome)
+				{
+					AnoLancamento = musicaRequest.AnoLancamento,
+					Artista = artista
+				};
+
 				dal.Adicionar(musica);
 				return Results.Ok();
 			});
@@ -43,21 +51,24 @@ namespace ScreenSound.API.Endpoints
 				return Results.NoContent();
 			});
 
-			app.MapPut("/Musicas", ([FromServices] DAL<Musica> dal, [FromBody] Musica musica) =>
+			app.MapPut("/Musicas", ([FromServices] DAL<Musica> dal, [FromBody] EditarMusicaRequest editarMusica) =>
 			{
-				var musicaAtualizar = dal.Mostrar(musica.Id);
+				var musicaAtualizar = dal.Mostrar(editarMusica.Id);
 				if (musicaAtualizar is null)
 				{
 					return Results.NotFound();
 				}
 
-				musicaAtualizar.Nome = musica.Nome;
-				musicaAtualizar.AnoLancamento = musica.AnoLancamento;
+				if (editarMusica.Nome is not null) musicaAtualizar.Nome = editarMusica.Nome;
+				if (editarMusica.AnoLancamento is not null) musicaAtualizar.AnoLancamento = editarMusica.AnoLancamento;
 
 				dal.Atualizar(musicaAtualizar);
 				return Results.Ok();
 			});
 
 		}
+
+		public static MusicaResponse ToResponse(this Musica musica)
+			=> new(musica.Id, musica.Nome, musica.AnoLancamento, musica.Artista?.Id, musica.Artista?.Nome);
 	}
 }
