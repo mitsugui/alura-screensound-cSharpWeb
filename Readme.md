@@ -1,11 +1,19 @@
 ﻿# Screen Sound - sistema de cadastro e artistas e músicas
 
-## 01. Uso do Banco de Dados
+Projeto simples criado com intuito de acompanhar as aulas dos cursos:
+- .NET: persistindo dados com Entity Framework Core.
+- .NET: criando uma API Web com ASPNET Core.
 
-Projeto simples criado com intuito de acompanhar as aulas do curso:
-- .NET: persistindo dados com Entity Framework Core
+## Descrição
 
-Não segue nenhuma das boas práticas de segurança.
+Projeto composto por:
+- API Web que permite o cadastro de artistas e músicas
+- Um projeto Console que consome mesmo banco de dados.
+- Um projeto de banco de dados com Migrations.
+- Bibliotecas auxiliares para compatilhamento de código.
+
+
+O projeto foi criado utilizando .NET 8.0 e Entity Framework Core.
 
 
 ## Execução do banco de dados
