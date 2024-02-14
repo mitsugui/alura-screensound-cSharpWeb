@@ -21,8 +21,17 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.Configure<JsonOptions>(
 	op => op.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+builder.Services.AddCors();
 
 var app = builder.Build();
+
+
+app.UseCors(options =>
+{
+    options.AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader();
+});
 
 app.AddArtistasEndpoints();
 app.AddMusicasEndpoints();

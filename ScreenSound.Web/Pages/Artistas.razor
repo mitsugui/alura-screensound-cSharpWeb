@@ -3,7 +3,7 @@
 @using ScreenSound.API.Responses
 @inject ArtistasApi Api
 
-<h3>Artistas</h3>
+<PageTitle>Artistas</PageTitle>
 
 <table>
 	<tr>
@@ -15,9 +15,11 @@
 	{
 		@foreach (var artista in _artistas)
 		{
-			<td>@artista.Nome</td>
-			<td>@artista.Bio</td>
-			<td>@artista.FotoPerfil</td>
+			<tr>
+				<td>@artista.Nome</td>
+				<td>@artista.Bio</td>
+				<td>@artista.FotoPerfil</td>
+			</tr>
 		}
 	}
 </table>
