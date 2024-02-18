@@ -10,7 +10,6 @@ namespace ScreenSound.API.Endpoints
 	{
 		public static void AddMusicasEndpoints(this IEndpointRouteBuilder app)
 		{
-
 			app.MapGet("/Musicas", ([FromServices] DAL<Musica> dal) =>
 			Results.Ok(dal.Listar()
 				.Select(m => m.ToResponse())

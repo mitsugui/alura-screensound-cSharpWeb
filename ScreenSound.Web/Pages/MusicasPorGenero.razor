@@ -1,0 +1,39 @@
+﻿@page "/MusicasPorGenero"
+@using ScreenSound.Web.Services
+@using ScreenSound.Web.Responses
+@inject ArtistasApi Api
+
+<PageTitle>Procurar Músicas</PageTitle>
+
+<input type="text" @bind="_genero" placeholder="Pesquisar gênero..." @bind:after="PesquisarAsync"/>
+
+<table>
+	<tr>
+		<th>Nome</th>
+		<th>Ano de lançamento</th>
+		<th>Artista</th>
+	</tr>
+	@if (_musicas is not null)
+	{
+		@foreach (var musica in _musicas)
+		{
+			<tr>
+				<td>@musica.Nome</td>
+				<td>@musica.AnoLancamento</td>
+				<td>@musica.NomeArtista</td>
+			</tr>
+		}
+	}
+</table>
+
+@code {
+	private string? _genero;
+	private ICollection<MusicaResponse>? _musicas;
+
+	private async Task PesquisarAsync()
+	{
+		_musicas = _genero is not null
+			? await Api.GetMusicasPorGeneroAsync(_genero)
+			: null;
+	}
+}

@@ -1,34 +1,30 @@
 ﻿@page "/Artistas"
 @using ScreenSound.Web.Services
-@using ScreenSound.API.Responses
 @inject ArtistasApi Api
 
 <PageTitle>Artistas</PageTitle>
 
-<table>
-	<tr>
-		<th>Nome</th>
-		<th>Bio</th>
-		<th>Foto Perfil</th>
-	</tr>
-	@if (_artistas is not null)
-	{
+<h3>Artistas</h3>
+
+@if (_artistas is not null)
+{
+	<MudGrid>
 		@foreach (var artista in _artistas)
 		{
-			<tr>
-				<td>@artista.Nome</td>
-				<td>@artista.Bio</td>
-				<td>@artista.FotoPerfil</td>
-			</tr>
+			<MudItem xs="3">
+				<CardArtista Artista="artista" />
+			</MudItem>
 		}
-	}
-</table>
+	</MudGrid>
+}
 
 @code {
 	private ICollection<ArtistaResponse>? _artistas;
 
 	protected override async Task OnInitializedAsync()
 	{
-		_artistas = await Api.GetArtistasAsync();
+		_artistas = (await Api.GetArtistasAsync())
+			?.OrderBy(a => a.Nome)
+			.ToList();
 	}
 }
