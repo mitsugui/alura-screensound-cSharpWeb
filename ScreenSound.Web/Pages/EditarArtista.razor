@@ -1,7 +1,74 @@
-﻿@page "/EditarArtista"
+﻿@page "/EditarArtista/{NomeArtista}"
 
-<PageTitle>Editar artista</PageTitle>
+@inject ArtistasApi ArtistasApi
+@inject NavigationManager NavigationManager
+
+<PageTitle>Edição de artista</PageTitle>
+
+<MudPaper Class="px-8 pt-2 pb-4 mx-12 my-8" Justify="Justify.Center">
+	
+	<MudText Class="mt-8" Typo="Typo.h4">Edição do Artista</MudText>
+	
+	<MudForm>
+		
+		<MudTextField Class="mt-4" T="string" Placeholder="Nome do Artista"
+		              Variant="Variant.Outlined"
+		              @bind-Value="_nome"
+		              Required="true"
+		              RequiredError="Campo obrigatório."/>
+
+		<MudTextField Class="mt-4" T="string" Placeholder="Biografia do Artista"
+		              Variant="Variant.Outlined"
+		              @bind-Value="_biografia"
+		              Lines="4"
+		              Required="true"
+		              RequiredError="Campo obrigatório." />
+		
+		<div class="d-flex align-center justify-space-between mt-4">
+			<MudButton Variant="Variant.Filled"
+			           @onclick="DeletarAsync"
+			           Color="Color.Secondary"
+			           Class="m1-auto">
+				Deletar
+			</MudButton>
+			<MudButton Variant="Variant.Filled"
+			           @onclick="Voltar"
+			           Color="Color.Primary"
+			           Class="m1-auto">
+				Voltar
+			</MudButton>
+		</div>
+
+	</MudForm>
+
+</MudPaper>
 
 @code {
+	private string? _nome;
+	private string? _biografia;
 
+	[Parameter]
+	public string? NomeArtista { get; set; }
+
+	public ArtistaResponse? Artista { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		Artista = await ArtistasApi.GetArtistaPorNomeAsync(NomeArtista!);
+		_nome = Artista?.Nome;
+		_biografia = Artista?.Bio;
+	}
+
+	private async Task DeletarAsync()
+	{
+		if (Artista == null) return;
+
+		await ArtistasApi.DeleteArtistaAsync(Artista.Id);
+		NavigationManager.NavigateTo("/Artistas");
+	}
+
+	private void Voltar()
+	{
+		NavigationManager.NavigateTo("/Artistas");
+	}
 }
