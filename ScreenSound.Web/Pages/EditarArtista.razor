@@ -26,6 +26,12 @@
 		
 		<div class="d-flex align-center justify-space-between mt-4">
 			<MudButton Variant="Variant.Filled"
+			           @onclick="SalvarAsync"
+			           Color="Color.Primary"
+			           Class="m1-auto">
+				Salvar
+			</MudButton>
+			<MudButton Variant="Variant.Filled"
 			           @onclick="DeletarAsync"
 			           Color="Color.Secondary"
 			           Class="m1-auto">
@@ -57,6 +63,16 @@
 		Artista = await ArtistasApi.GetArtistaPorNomeAsync(NomeArtista!);
 		_nome = Artista?.Nome;
 		_biografia = Artista?.Bio;
+	}
+
+	private async Task SalvarAsync()
+	{
+		if (Artista == null) return;
+
+		var request = new EditarArtistaRequest(Artista!.Id, _nome, _biografia, null);
+
+		await ArtistasApi.UpdateArtistaAsync(request);
+		NavigationManager.NavigateTo("/Artistas");
 	}
 
 	private async Task DeletarAsync()
