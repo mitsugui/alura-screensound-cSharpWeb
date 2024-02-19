@@ -22,4 +22,8 @@
 		<ProjectReference Include="..\ScreenSound.Shared.Persistencia\ScreenSound.Shared.Persistencia.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="wwwroot\FotosPerfis\" />
+	</ItemGroup>
+
 </Project>

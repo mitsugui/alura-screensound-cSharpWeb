@@ -33,6 +33,8 @@ app.UseCors(options =>
         .AllowAnyHeader();
 });
 
+app.UseStaticFiles();
+
 app.AddArtistasEndpoints();
 app.AddMusicasEndpoints();
 app.AddGenerosEndpoint();

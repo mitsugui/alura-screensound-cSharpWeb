@@ -23,17 +23,27 @@ namespace ScreenSound.API.Endpoints
 					: Results.Ok(artista.ToResponse());
 			});
 
-			app.MapPost("/Artistas", ([FromServices] DAL<Artista> dal, [FromBody] ArtistaRequest artistaRequest) =>
+			app.MapPost("/Artistas", async ([FromServices] IHostEnvironment env, [FromServices] DAL<Artista> dal, [FromBody] ArtistaRequest artistaRequest) =>
 			{
-				if (dal.ExisteEntidadeCom(g => artistaRequest.Nome.Equals(g.Nome, StringComparison.InvariantCultureIgnoreCase)))
+				var nome = artistaRequest.Nome.Trim();
+				if (dal.ExisteEntidadeCom(a =>
+						nome.Equals(a.Nome, StringComparison.InvariantCultureIgnoreCase)))
 				{
 					return Results.BadRequest("Já exite um artista cadastrado com este nome.");
 				}
 
+				var imagemArtista = $"{DateTime.UtcNow:yyyyMMdd_hhss}_{nome}.jpeg";
+				var path = Path.Combine(env.ContentRootPath, "wwwroot", "FotosPerfis", imagemArtista);
+
+				using var ms = new MemoryStream(Convert.FromBase64String(artistaRequest.FotoPerfil!));
+				using FileStream fs = new(path, FileMode.Create);
+				await ms.CopyToAsync(fs);
+
 				var artista = new Artista
 				{
 					Nome = artistaRequest.Nome,
-					Bio = artistaRequest.Bio
+					Bio = artistaRequest.Bio,
+					FotoPerfil = $"/FotosPerfis/{imagemArtista}"
 				};
 
 				dal.Adicionar(artista);
