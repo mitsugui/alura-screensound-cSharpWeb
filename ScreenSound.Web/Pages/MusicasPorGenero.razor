@@ -1,39 +1,49 @@
 ﻿@page "/MusicasPorGenero"
-@using ScreenSound.Web.Services
-@using ScreenSound.Web.Responses
+@page "/MusicasPorGenero/{NomeGenero}"
 @inject MusicasApi Api
 
 <PageTitle>Procurar Músicas</PageTitle>
 
-<input type="text" @bind="_genero" placeholder="Pesquisar gênero..." @bind:after="PesquisarAsync"/>
+<MudTextField Placeholder="Pesquisar gênero..."
+              @bind-Value="NomeGenero" />
 
-<table>
-	<tr>
-		<th>Nome</th>
-		<th>Ano de lançamento</th>
-		<th>Artista</th>
-	</tr>
-	@if (_musicas is not null)
-	{
+<MudButton Variant="Variant.Filled"
+		   @onclick="PesquisarAsync"
+           Color="Color.Primary"
+           Class="m1-auto">
+	Pesquisar
+</MudButton>
+
+
+@if (_musicas is not null)
+{
+	<MudGrid>
 		@foreach (var musica in _musicas)
 		{
-			<tr>
-				<td>@musica.Nome</td>
-				<td>@musica.AnoLancamento</td>
-				<td>@musica.NomeArtista</td>
-			</tr>
+			<MudItem xs="3">
+				<CardMusica Musica="musica" />
+			</MudItem>
 		}
-	}
-</table>
+	</MudGrid>
+}
 
 @code {
-	private string? _genero;
 	private ICollection<MusicaResponse>? _musicas;
+
+	[Parameter]
+	public string? NomeGenero { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		if (NomeGenero == null) return;
+
+		await PesquisarAsync();
+	}
 
 	private async Task PesquisarAsync()
 	{
-		_musicas = _genero is not null
-			? await Api.GetMusicasPorGeneroAsync(_genero)
+		_musicas = NomeGenero is not null
+			? await Api.GetMusicasPorGeneroAsync(NomeGenero)
 			: null;
 	}
 }

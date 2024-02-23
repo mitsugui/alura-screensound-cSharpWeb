@@ -13,6 +13,11 @@ namespace ScreenSound.Web.Services
 			_httpClient = factory.CreateClient("API");
 		}
 
+		public async Task<MusicaResponse?> GetMusicaPorNomeAsync(string nomeMusica)
+		{
+			return await _httpClient.GetFromJsonAsync<MusicaResponse>($"musicas/{nomeMusica}");
+		}
+
 		public async Task<ICollection<MusicaResponse>?> GetMusicasPorGeneroAsync(string genero)
 		{
 			return await _httpClient.GetFromJsonAsync<ICollection<MusicaResponse>>("musicas");
@@ -21,6 +26,16 @@ namespace ScreenSound.Web.Services
 		public async Task AddMusicaAsync(MusicaRequest request)
 		{
 			await _httpClient.PostAsJsonAsync("musicas", request);
+		}
+
+		public async Task UpdateMusicaAsync(EditarMusicaRequest request)
+		{
+			await _httpClient.PutAsJsonAsync("musicas", request);
+		}
+
+		public async Task DeleteMusicaAsync(int id)
+		{
+			await _httpClient.DeleteAsync($"musicas/{id}");
 		}
 	}
 }
