@@ -20,7 +20,7 @@
 					  RequiredError="Campo obrigatório." />
 
 		<MudSelect Class="mt-4" T="ArtistaResponse" Label="Artistas" Variant="Variant.Outlined"
-				   ValueChanged="ArtistaSelecionado"
+				   @bind-Value="ArtistaDaMusica"
 				   AnchorOrigin="Origin.BottomCenter">
 			@if (_artistas is not null)
 			{
@@ -39,20 +39,14 @@
 						 RequiredError="Campo obrigatório." />
 
 		<MudSelect Class="mt-4" T="GeneroResponse" Label="Gêneros" Variant="Variant.Outlined"
-				   ValueChanged="GeneroSelecionado"
+		           MultiSelection="true"
+				   @bind-SelectedValues="GenerosSelecionados"
 				   AnchorOrigin="Origin.BottomCenter">
 			@if (_generos is not null)
 			{
 				@foreach (var genero in _generos)
 				{
 					<MudSelectItem Value="genero" />
-				}
-			}
-			@if (GenerosSelecionados is not null)
-			{
-				@foreach (var genero in GenerosSelecionados)
-				{
-					<MudAlert Severity="Severity.Info">@(genero.Nome) adicionado como gênero da música.</MudAlert>
 				}
 			}
 		</MudSelect>
@@ -89,7 +83,7 @@
 	private ICollection<ArtistaResponse>? _artistas;
 	private ICollection<GeneroResponse>? _generos;
 	
-	private List<GeneroResponse>? GenerosSelecionados { get; set; } = new();
+	private IEnumerable<GeneroResponse> GenerosSelecionados { get; set; } = new List<GeneroResponse>();
 	private ArtistaResponse? ArtistaDaMusica { get; set; }
 	private MusicaResponse? Musica { get; set; }
 
@@ -106,36 +100,38 @@
 
 		_nome = Musica.Nome;
 		_anoLancamento = Musica.AnoLancamento;
-		ArtistaDaMusica = new ArtistaResponse(Musica.IdArtista.GetValueOrDefault(), Musica.NomeArtista!, "", "");
-	}
-
-	private void ArtistaSelecionado(ArtistaResponse artista)
-	{
-		ArtistaDaMusica = artista;
-	}
-
-	private void GeneroSelecionado(GeneroResponse genero)
-	{
-		if (GenerosSelecionados is null) return;
-
-		if (GenerosSelecionados.Contains(genero)) return;
-
-		GenerosSelecionados.Add(genero);
+		ArtistaDaMusica = _artistas
+			?.FirstOrDefault(a => a.Id == Musica.IdArtista.GetValueOrDefault());
+		GenerosSelecionados = Musica.Generos?.ToList() 
+			?? new List<GeneroResponse>();
 	}
 
 	public async Task SalvarAsync()
 	{
-		// var generosRequest = new List<GeneroRequest>();
-		// if (GenerosSelecionados is not null)
-		// {
-		// 	foreach (var genero in GenerosSelecionados)
-		// 	{
-		// 		generosRequest.Add(new GeneroRequest(
-		// 			genero.Nome, genero.Descricao));
-		// 	}
-		// }
-		
-		var request = new EditarMusicaRequest(Musica!.Id, _nome!, _anoLancamento!);
+		List<GeneroRequest>? generosRequest;
+		if(Musica?.Generos != null
+			&& !GenerosSelecionados
+		   .Select(g => g.Id)
+				.ToHashSet()
+		   .SetEquals(Musica.Generos.Select(g => g.Id)))
+		{
+			generosRequest = new List<GeneroRequest>();
+			foreach (var genero in GenerosSelecionados)
+			{
+				generosRequest.Add(new GeneroRequest(
+					genero.Nome, genero.Descricao));
+			}
+		}
+		else
+		{
+			generosRequest = null;
+		}
+
+		var idArtista = Musica?.IdArtista != ArtistaDaMusica?.Id 
+			? ArtistaDaMusica?.Id
+			: null;
+
+		var request = new EditarMusicaRequest(Musica!.Id, _nome!, _anoLancamento!, idArtista, generosRequest);
 		await MusicasApi.UpdateMusicaAsync(request);
 		NavigationManager.NavigateTo("/MusicasPorGenero");
 	}

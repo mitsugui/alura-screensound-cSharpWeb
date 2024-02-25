@@ -1,14 +1,14 @@
-﻿@page "/MusicasPorGenero"
-@page "/MusicasPorGenero/{NomeGenero}"
+﻿@page "/MusicasPorArtista"
+@page "/MusicasPorArtista/{NomeArtista}"
 @inject MusicasApi MusicasApi
-@inject GenerosApi GenerosApi
+@inject ArtistasApi ArtistasApi
 
 <PageTitle>Procurar Músicas</PageTitle>
 
 <MudAutocomplete T="string"
-                 Label="Gêneros"
-                 @bind-Value="NomeGenero"
-                 SearchFunc="@ListarGenerosAsync"
+                 Label="Artista"
+				 @bind-Value="NomeArtista"
+                 SearchFunc="@ListarArtistasAsync"
                  ResetValueOnEmptyText="true"
                  CoerceValue="true"
                  ShowProgressIndicator="true"
@@ -21,7 +21,7 @@
            Class="m1-auto mt-4">
 	Pesquisar
 </MudButton>
-				 
+
 @if (_musicas is not null)
 {
 	<MudGrid>
@@ -38,31 +38,31 @@
 	private ICollection<MusicaResponse>? _musicas;
 
 	[Parameter]
-	public string? NomeGenero { get; set; }
+	public string? NomeArtista { get; set; }
 
 	protected override async Task OnInitializedAsync()
 	{
-		if (NomeGenero == null) return;
+		if (NomeArtista == null) return;
 
 		await PesquisarAsync();
 	}
 
-	private async Task<IEnumerable<string>> ListarGenerosAsync(string genero)
+	private async Task<IEnumerable<string>> ListarArtistasAsync(string genero)
 	{
 		if (string.IsNullOrEmpty(genero)) return Array.Empty<string>();
 
-		var generos = await GenerosApi.GetGenerosAsync();
-		return generos
-				?.Where(g => g.Nome != null
-					&& g.Nome.Contains(genero, StringComparison.InvariantCultureIgnoreCase))
-				.Select(g => g.Nome!)
+		var artistas = await ArtistasApi.GetArtistasAsync();
+		return artistas
+				?.Where(a => a.Nome
+					.Contains(genero, StringComparison.InvariantCultureIgnoreCase))
+				.Select(g => g.Nome)
 			?? Array.Empty<string>();
 	}
 
 	private async Task PesquisarAsync()
 	{
-		_musicas = NomeGenero is not null
-			? await MusicasApi.GetMusicasPorGeneroAsync(NomeGenero)
+		_musicas = NomeArtista is not null
+			? await MusicasApi.GetMusicasPorArtistaAsync(NomeArtista)
 			: null;
 	}
 }

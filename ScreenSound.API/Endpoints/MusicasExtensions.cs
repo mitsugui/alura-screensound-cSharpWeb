@@ -15,6 +15,25 @@ namespace ScreenSound.API.Endpoints
 				.Select(m => m.ToResponse())
 				.ToList()));
 
+			app.MapGet("/Musicas/Generos/{nome}", ([FromServices] DAL<Musica> dal, string nome) =>
+			{
+				return Results.Ok(dal
+					.Listar()
+					.Where(m => m.Generos
+						.Any(g => nome.Equals(g.Nome, StringComparison.InvariantCultureIgnoreCase)))
+					.Select(m => m.ToResponse())
+					.ToList());
+			});
+
+			app.MapGet("/Musicas/Artistas/{nome}", ([FromServices] DAL<Musica> dal, string nome) =>
+			{
+				return Results.Ok(dal
+					.Listar()
+					.Where(m => nome.Equals(m.Artista?.Nome, StringComparison.InvariantCultureIgnoreCase))
+					.Select(m => m.ToResponse())
+					.ToList());
+			});
+
 			app.MapGet("/Musicas/{nome}", ([FromServices] DAL<Musica> dal, string nome) =>
 			{
 				var musica = dal.MostrarPor(m => m.Nome.Equals(nome, StringComparison.InvariantCultureIgnoreCase));
@@ -55,7 +74,9 @@ namespace ScreenSound.API.Endpoints
 				return Results.NoContent();
 			});
 
-			app.MapPut("/Musicas", ([FromServices] DAL<Musica> dal, [FromBody] EditarMusicaRequest editarMusica) =>
+			app.MapPut("/Musicas", ([FromServices] DAL<Musica> dal, [FromServices] DAL<Genero> dalGenero,
+				[FromServices] DAL<Artista> dalArtista,
+				[FromBody] EditarMusicaRequest editarMusica) =>
 			{
 				var musicaAtualizar = dal.Mostrar(editarMusica.Id);
 				if (musicaAtualizar is null)
@@ -65,6 +86,17 @@ namespace ScreenSound.API.Endpoints
 
 				if (editarMusica.Nome is not null) musicaAtualizar.Nome = editarMusica.Nome;
 				if (editarMusica.AnoLancamento is not null) musicaAtualizar.AnoLancamento = editarMusica.AnoLancamento;
+				if (editarMusica.IdArtista is not null)
+				{
+					var artista = dalArtista.Mostrar(editarMusica.IdArtista.Value);
+					musicaAtualizar.Artista = artista;
+				}
+				if (editarMusica.Generos is not null)
+				{
+					musicaAtualizar.Generos = editarMusica.Generos
+							?.EntityAssembler(dalGenero)
+						?? new List<Genero>();
+				}
 
 				dal.Atualizar(musicaAtualizar);
 				return Results.Ok();
@@ -73,7 +105,10 @@ namespace ScreenSound.API.Endpoints
 		}
 
 		public static MusicaResponse ToResponse(this Musica musica)
-			=> new(musica.Id, musica.Nome, musica.AnoLancamento, musica.Artista?.Id, musica.Artista?.Nome);
+			=> new(musica.Id, musica.Nome, musica.AnoLancamento, musica.Artista?.Id, musica.Artista?.Nome,
+				musica.Generos
+					.Select(g => new GeneroResponse(g.Id, g.Nome, g.Descricao))
+					.ToList());
 
 		public static Genero ToEntity(this GeneroRequest request) 
 			=> new() { Nome = request.Nome, Descricao = request.Descricao };

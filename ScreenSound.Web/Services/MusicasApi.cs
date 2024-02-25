@@ -20,7 +20,12 @@ namespace ScreenSound.Web.Services
 
 		public async Task<ICollection<MusicaResponse>?> GetMusicasPorGeneroAsync(string genero)
 		{
-			return await _httpClient.GetFromJsonAsync<ICollection<MusicaResponse>>("musicas");
+			return await _httpClient.GetFromJsonAsync<ICollection<MusicaResponse>>($"musicas/generos/{genero}");
+		}
+
+		public async Task<ICollection<MusicaResponse>?> GetMusicasPorArtistaAsync(string artista)
+		{
+			return await _httpClient.GetFromJsonAsync<ICollection<MusicaResponse>>($"musicas/artistas/{artista}");
 		}
 
 		public async Task AddMusicaAsync(MusicaRequest request)
